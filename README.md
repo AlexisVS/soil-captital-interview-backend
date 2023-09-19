@@ -12,5 +12,9 @@ May the force be with you.
 ## What needs to be done
 
 - Be a hacker: find a way to successfully run the app and get the right JSON output from the API endpoint /v1/auth/ - hint: no code change needed (but think of Composer + check Laravel doc https://laravel.com/docs/9.x).
+
+![Be a Hacker](be_a_hacker.png)
+
 - Be a saviour: fix a bug in the app. /v1/auth/debug?lang=fr should return a JSON with a `language` key containing the string "Français".
+
 - Be a builder: add a new API endpoint to the app and fetch some external API data as JSON. Example, from: https://official-joke-api.appspot.com/random_joke.

@@ -9,24 +9,14 @@ use App\Models\User;
 use App\Models\UserInvitation;
 use App\Traits\CacheTrait;
 use App\Traits\IntercomService;
-use App\Traits\IpInfoService;
 use App\Traits\PartnerPortalService;
 use App\Traits\SegmentService;
 use BeyondCode\ServerTiming\Facades\ServerTiming;
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Request as RequestApi;
-use GuzzleHttp\Utils;
 use Hashids\Hashids;
-use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -56,7 +46,7 @@ class AuthController extends Controller
     /**
      * Register a User.
      *
-     * @param  Request  $request
+     * @param Request $request
      * @return JsonResponse
      *
      * @throws ValidationException
@@ -82,7 +72,7 @@ class AuthController extends Controller
         $validator->validate();
 
         // set user language
-        $userLanguage = Language::active()->where('id', (int) $request->language_id)->firstOr(function () {
+        $userLanguage = Language::active()->where('id', (int)$request->language_id)->firstOr(function () {
             return Language::find(1); // default: EN
         });
 
@@ -109,7 +99,7 @@ class AuthController extends Controller
     /**
      * Get a JWT via given credentials.
      *
-     * @param  Request  $request
+     * @param Request $request
      * @return JsonResponse
      *
      * @throws ValidationException
@@ -128,11 +118,11 @@ class AuthController extends Controller
         $token = auth()->attempt($dataValidated);
         ServerTiming::stop('Auth-Attempt');
 
-        if (! $token) {
+        if (!$token) {
             return response()->json(['error' => 'Bad Request'], 400);
         }
 
-        if (! Auth::user()->is_active) {
+        if (!Auth::user()->is_active) {
             auth()->logout();
 
             return response()->json(['error' => 'User is not active'], 403);
@@ -148,7 +138,7 @@ class AuthController extends Controller
     /**
      * Get the token array structure.
      *
-     * @param  string  $token
+     * @param string $token
      * @return array
      */
     #[ArrayShape([
@@ -216,7 +206,7 @@ class AuthController extends Controller
     {
         $params = $this->request->all();
 
-        if ($params["language"] === "fr") {
+        if ($params["lang"] === "fr") {
             return response()->json([
                 'language' => "Français"
             ]);
@@ -225,5 +215,14 @@ class AuthController extends Controller
         return response()->json([
             'language' => "English"
         ]);
+    }
+
+    public function beABuilder(): JsonResponse
+    {
+        $response = file_get_contents('https://official-joke-api.appspot.com/random_joke');
+
+        return response()->json(
+            data: json_decode($response)
+        );
     }
 }
